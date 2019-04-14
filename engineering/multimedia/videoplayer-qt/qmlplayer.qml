@@ -21,7 +21,7 @@ import QtGStreamer 1.0
 Rectangle {
     id: window
     width: 400
-    height: 300
+    height: 330
 
     Column {
         VideoItem {
@@ -72,14 +72,17 @@ Rectangle {
                 MouseArea { anchors.fill: parent; onClicked: player.open() }
             }
 
+        }
+        Row {
+
             Rectangle {
                 id: durationText
                 color: "black"
 
-                width: 180
+                width: 400
                 height: 30
 
-                Text { text: player.duration; color: "white"; anchors.centerIn: parent }
+                Text { text: player.position + " " + player.duration; color: "white"; anchors.centerIn: parent }
             }
 
         }

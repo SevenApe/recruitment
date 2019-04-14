@@ -32,6 +32,13 @@ public:
     QTime *getDuration();
 
     /**
+     * @brief getPosition - Current time location
+     * in the track
+     * @return
+     */
+    QTime getPosition(QGst::PipelinePtr pipeline);
+
+    /**
      * @brief info_loaded
      * True if the info has been loaded
      */

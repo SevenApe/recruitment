@@ -29,6 +29,10 @@ Player::Player(QObject *parent)
     : QObject(parent)
 {
     duration = "Duration: 00:000:00.000";
+    position = "Position: 00:000:00.000";
+
+    // When this timer triggers it will update the position text
+    connect(&position_timer, SIGNAL(timeout()), this, SLOT(updatePosition()));
 }
 
 void Player::setVideoSink(const QGst::ElementPtr & sink)
@@ -47,6 +51,10 @@ void Player::stop()
 {
     if (m_pipeline) {
         m_pipeline->setState(QGst::StateNull);
+        position_timer.stop();
+
+        // Reset the position clock
+        setPosition(QTime(0,0));
     }
 }
 
@@ -103,15 +111,32 @@ void Player::setDuration(QTime *duration_qtime)
     Q_EMIT durationUpdated();
 }
 
+QString Player::getPosition()
+{
+    return position;
+}
+
+void Player::setPosition(QTime position_qtime)
+{
+    position = "Position: " + position_qtime.toString("HH:mm:ss.zzz");
+    Q_EMIT positionUpdated();
+}
+
+void Player::updatePosition()
+{
+    setPosition(media_info_gatherer.getPosition(m_pipeline));
+}
+
 void Player::onBusMessage(const QGst::MessagePtr & message)
 {
     switch (message->type()) {
     case QGst::MessageStreamStart:
         // Get information about the stream
         media_info_gatherer.getInfo(m_pipeline);
-
         // Update the UI elements with stream info
         setDuration(media_info_gatherer.getDuration());
+        //Check the position of the stream every 20 ms
+        position_timer.start(20);
         break;
     case QGst::MessageEos: //End of stream. We reached the end of the file.
         stop();

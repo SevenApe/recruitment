@@ -25,3 +25,10 @@ QTime *MediaInfoGatherer::getDuration()
 {
     return &duration;
 }
+
+QTime MediaInfoGatherer::getPosition(QGst::PipelinePtr pipeline)
+{
+    QGst::PositionQueryPtr query = QGst::PositionQuery::create(QGst::FormatTime);
+    pipeline->query(query);
+    return QGst::ClockTime(query->position()).toTime();
+}

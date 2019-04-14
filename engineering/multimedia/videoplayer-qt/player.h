@@ -20,6 +20,8 @@
 #define PLAYER_H
 
 #include <QObject>
+#include <QTimer>
+
 #include <QGst/Pipeline>
 #include <QGst/Message>
 
@@ -28,19 +30,43 @@
 class Player : public QObject
 {
     Q_OBJECT
+
     Q_PROPERTY(QString duration READ getDuration NOTIFY durationUpdated)
+    Q_PROPERTY(QString position READ getPosition NOTIFY positionUpdated)
+
 public:
     explicit Player(QObject *parent = 0);
     void setVideoSink(const QGst::ElementPtr & sink);
+
+    /**
+     * @brief getDuration - Called from the qml to get the
+     * duration; triggered by the durationUpdated signal.
+     * @return
+     */
     QString getDuration();
+
+    /**
+     * @brief getPosition - Called from qml to get the position
+     * triggered by the positionUpdated signal.
+     * @return
+     */
+    QString getPosition();
 
 public Q_SLOTS:
     void play();
     void stop();
     void open();
 
+private Q_SLOTS:
+    /**
+     * @brief updatePosition - Called every 20ms
+     * by position_timer when the stream is playing.
+     */
+    void updatePosition();
+
 Q_SIGNALS:
     void durationUpdated();
+    void positionUpdated();
 
 private:
     void openFile(const QString & fileName);
@@ -55,9 +81,20 @@ private:
      */
     void setDuration(QTime *duration_qtime);
 
+    /**
+     * @brief setPosition Sets the local variable; then
+     * starts chain of events to then update the UI.
+     * @param position_qtime
+     */
+    void setPosition(QTime position_qtime);
+
+
     MediaInfoGatherer media_info_gatherer;
 
     QString duration;
+    QString position;
+
+    QTimer position_timer;
 
     QGst::PipelinePtr m_pipeline;
     QGst::ElementPtr m_videoSink;
