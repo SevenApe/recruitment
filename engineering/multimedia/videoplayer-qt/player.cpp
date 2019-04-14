@@ -24,9 +24,11 @@
 #include <QGst/ElementFactory>
 #include <QGst/Bus>
 
+
 Player::Player(QObject *parent)
     : QObject(parent)
 {
+    duration = "Duration: 00:000:00.000";
 }
 
 void Player::setVideoSink(const QGst::ElementPtr & sink)
@@ -87,11 +89,30 @@ void Player::setUri(const QString & uri)
     if (m_pipeline) {
         m_pipeline->setProperty("uri", uri);
     }
+
+}
+
+QString Player::getDuration()
+{
+    return duration;
+}
+
+void Player::setDuration(QTime *duration_qtime)
+{
+    duration = "Duration: " + duration_qtime->toString("HH:mm:ss.zzz");
+    Q_EMIT durationUpdated();
 }
 
 void Player::onBusMessage(const QGst::MessagePtr & message)
 {
     switch (message->type()) {
+    case QGst::MessageStreamStart:
+        // Get information about the stream
+        media_info_gatherer.getInfo(m_pipeline);
+
+        // Update the UI elements with stream info
+        setDuration(media_info_gatherer.getDuration());
+        break;
     case QGst::MessageEos: //End of stream. We reached the end of the file.
         stop();
         break;

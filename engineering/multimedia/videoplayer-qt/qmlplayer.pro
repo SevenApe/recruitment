@@ -4,7 +4,7 @@ TEMPLATE = app
 TARGET = qmlplayer
 
 # produce nice compilation output
-CONFIG += silent
+#CONFIG += silent
 
 # Tell qmake to use pkg-config to find QtGStreamer.
 CONFIG += link_pkgconfig
@@ -29,6 +29,8 @@ DEFINES += QT_NO_KEYWORDS
 QT += declarative opengl
 
 # Input
-HEADERS += player.h
-SOURCES += main.cpp player.cpp
+HEADERS += player.h \
+    mediainfogatherer.h
+SOURCES += main.cpp player.cpp \
+    mediainfogatherer.cpp
 RESOURCES += qmlplayer.qrc

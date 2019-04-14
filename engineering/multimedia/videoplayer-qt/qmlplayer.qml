@@ -71,6 +71,17 @@ Rectangle {
                 Text { text: "Open file"; color: "white"; anchors.centerIn: parent }
                 MouseArea { anchors.fill: parent; onClicked: player.open() }
             }
+
+            Rectangle {
+                id: durationText
+                color: "black"
+
+                width: 180
+                height: 30
+
+                Text { text: player.duration; color: "white"; anchors.centerIn: parent }
+            }
+
         }
     }
 }

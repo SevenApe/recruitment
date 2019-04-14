@@ -23,23 +23,41 @@
 #include <QGst/Pipeline>
 #include <QGst/Message>
 
+#include "mediainfogatherer.h"
+
 class Player : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString duration READ getDuration NOTIFY durationUpdated)
 public:
     explicit Player(QObject *parent = 0);
-
     void setVideoSink(const QGst::ElementPtr & sink);
+    QString getDuration();
 
 public Q_SLOTS:
     void play();
     void stop();
     void open();
 
+Q_SIGNALS:
+    void durationUpdated();
+
 private:
     void openFile(const QString & fileName);
     void setUri(const QString & uri);
     void onBusMessage(const QGst::MessagePtr & message);
+
+    /**
+     * @brief setDuration - Gets the duration of the
+     * stream and saves it in HH:mm:ss.SSS format to
+     * duration. Emits change to QML
+     * @param duration_qtime
+     */
+    void setDuration(QTime *duration_qtime);
+
+    MediaInfoGatherer media_info_gatherer;
+
+    QString duration;
 
     QGst::PipelinePtr m_pipeline;
     QGst::ElementPtr m_videoSink;
