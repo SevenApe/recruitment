@@ -1,0 +1,26 @@
+Feature requests for the test and the branch code.
+This is intended to match the Jira naming convention I use in projects.
+I noticed some references to jira on your git hub page so hopefully
+this is the same format you use.
+
+VP-1
+----
+Add this file. Could have just pushed this to master, but
+it felt wrong ;p
+
+VP-2
+----
+Report the durantion of the clip to the user.
+
+VP-3
+----
+Know the current position of the stream.
+
+VP-4
+----
+Seek to a position in the stream.
+
+VP-5
+----
+Create a timeline with a snapshot preview.
+
