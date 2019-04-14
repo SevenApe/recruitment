@@ -23,13 +23,16 @@
 #include <QGlib/Error>
 #include <QGst/ElementFactory>
 #include <QGst/Bus>
+#include <QGst/query.h>
+#include <QGst/pipeline.h>
+#include <QGst/Event>
 
 
 Player::Player(QObject *parent)
     : QObject(parent)
 {
-    duration = "Duration: 00:000:00.000";
-    position = "Position: 00:000:00.000";
+    duration = "Duration: 00:00:00.000";
+    position = "Position: 00:00:00.000";
 
     // When this timer triggers it will update the position text
     connect(&position_timer, SIGNAL(timeout()), this, SLOT(updatePosition()));
@@ -100,6 +103,25 @@ void Player::setUri(const QString & uri)
 
 }
 
+void Player::sliderPositionChanged(const double &position)
+{
+    QTime *duration = media_info_gatherer.getDuration();
+
+    // Get the total number of seconds in the media
+    double duration_seconds = QTime(0, 0, 0).secsTo(*duration);
+
+    // Calculate how many seconds in the position of the slider is
+    double position_seconds = duration_seconds * position;
+
+    // Convert seconds back to QTime
+    QTime new_position = QTime(0,0,0);
+    new_position = new_position.addSecs(position_seconds);
+
+    // Seek to the new position
+    seekToPosition(new_position);
+}
+
+
 QString Player::getDuration()
 {
     return duration;
@@ -126,6 +148,17 @@ void Player::updatePosition()
 {
     setPosition(media_info_gatherer.getPosition(m_pipeline));
 }
+
+void Player::seekToPosition(QTime seek_to)
+{
+    QGst::SeekEventPtr evt = QGst::SeekEvent::create(
+        1.0, QGst::FormatTime, QGst::SeekFlagFlush,
+        QGst::SeekTypeSet, QGst::ClockTime::fromTime(seek_to),
+        QGst::SeekTypeNone, QGst::ClockTime::None
+    );
+    m_pipeline->sendEvent(evt);
+}
+
 
 void Player::onBusMessage(const QGst::MessagePtr & message)
 {

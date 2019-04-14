@@ -34,6 +34,7 @@ class Player : public QObject
     Q_PROPERTY(QString duration READ getDuration NOTIFY durationUpdated)
     Q_PROPERTY(QString position READ getPosition NOTIFY positionUpdated)
 
+
 public:
     explicit Player(QObject *parent = 0);
     void setVideoSink(const QGst::ElementPtr & sink);
@@ -52,10 +53,14 @@ public:
      */
     QString getPosition();
 
+    void seekToPosition(QTime);
+
 public Q_SLOTS:
     void play();
     void stop();
     void open();
+
+    void sliderPositionChanged(const double &position);
 
 private Q_SLOTS:
     /**
