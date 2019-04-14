@@ -33,6 +33,7 @@ Player::Player(QObject *parent)
 {
     duration = "Duration: 00:00:00.000";
     position = "Position: 00:00:00.000";
+    slider_position = 0;
 
     // When this timer triggers it will update the position text
     connect(&position_timer, SIGNAL(timeout()), this, SLOT(updatePosition()));
@@ -138,9 +139,21 @@ QString Player::getPosition()
     return position;
 }
 
+double Player::getSliderPosition()
+{
+    return slider_position;
+}
+
 void Player::setPosition(QTime position_qtime)
 {
     position = "Position: " + position_qtime.toString("HH:mm:ss.zzz");
+    QTime *duration = media_info_gatherer.getDuration();
+
+    double duration_seconds = QTime(0, 0, 0).secsTo(*duration);
+    double position_seconds = QTime(0, 0, 0).secsTo(position_qtime);
+
+    slider_position = position_seconds / duration_seconds;
+
     Q_EMIT positionUpdated();
 }
 

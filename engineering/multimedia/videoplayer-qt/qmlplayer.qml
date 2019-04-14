@@ -98,7 +98,7 @@ Rectangle {
                 signal positionChanged();
 
                 // value is read/write.
-                property real value: 0.0
+                property real value: player.slider_position
                 onValueChanged: updatePos();
                 property real maximum: 1.0
                 property real minimum: 0.0

@@ -33,6 +33,8 @@ class Player : public QObject
 
     Q_PROPERTY(QString duration READ getDuration NOTIFY durationUpdated)
     Q_PROPERTY(QString position READ getPosition NOTIFY positionUpdated)
+    Q_PROPERTY(double slider_position READ getSliderPosition NOTIFY positionUpdated)
+
 
 
 public:
@@ -52,6 +54,14 @@ public:
      * @return
      */
     QString getPosition();
+
+    /**
+     * @brief getSliderPosition This is calculated by
+     * elapsed_time * duration
+     * @return values between 0 - 1 representing slider position
+     */
+    double getSliderPosition();
+
 
     void seekToPosition(QTime);
 
@@ -98,6 +108,7 @@ private:
 
     QString duration;
     QString position;
+    double slider_position;
 
     QTimer position_timer;
 
