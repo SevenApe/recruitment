@@ -27,9 +27,8 @@
 #include <QGst/pipeline.h>
 #include <QGst/Event>
 
-
-Player::Player(QObject *parent)
-    : QObject(parent)
+Player::Player(ThumbnailGenerator *thumbnail_generator, QObject *parent)
+    : thumbnail_generator(thumbnail_generator), QObject(parent)
 {
     duration = "Duration: 00:00:00.000";
     position = "Position: 00:00:00.000";
@@ -102,6 +101,11 @@ void Player::setUri(const QString & uri)
         m_pipeline->setProperty("uri", uri);
     }
 
+    // Set the path for the file to get thumbnails for
+    thumbnail_generator->setUri(uri);
+
+    // Start generating the thumbnails
+    thumbnail_generator->start();
 }
 
 void Player::sliderPositionChanged(const double &position)

@@ -24,6 +24,8 @@
 #include <QGst/Ui/GraphicsVideoSurface>
 #include <QGst/Init>
 
+#include "thumbnailgenerator.h"
+
 #ifndef QMLPLAYER_NO_OPENGL
 # include <QGLWidget>
 #endif
@@ -51,9 +53,14 @@ int main(int argc, char **argv)
     QGst::Ui::GraphicsVideoSurface *surface = new QGst::Ui::GraphicsVideoSurface(&view);
     view.rootContext()->setContextProperty(QLatin1String("videoSurface1"), surface);
 
-    Player *player = new Player(&view);
+    ThumbnailGenerator *thumbnail_generator = new ThumbnailGenerator(&view);
+    view.rootContext()->setContextProperty(QLatin1String("thumbnail"), thumbnail_generator);
+
+    Player *player = new Player(thumbnail_generator, &view);
     player->setVideoSink(surface->videoSink());
     view.rootContext()->setContextProperty(QLatin1String("player"), player);
+
+    view.engine()->addImageProvider(QLatin1String("thumimgpro"), &(thumbnail_generator->image_provider));
 
 #if defined(UNINSTALLED_IMPORTS_DIR)
     //this allows the example to run from the QtGStreamer build tree without installing QtGStreamer

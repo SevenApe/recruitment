@@ -26,6 +26,8 @@
 #include <QGst/Message>
 
 #include "mediainfogatherer.h"
+#include "thumbnailgenerator.h"
+
 
 class Player : public QObject
 {
@@ -35,10 +37,8 @@ class Player : public QObject
     Q_PROPERTY(QString position READ getPosition NOTIFY positionUpdated)
     Q_PROPERTY(double slider_position READ getSliderPosition NOTIFY positionUpdated)
 
-
-
 public:
-    explicit Player(QObject *parent = 0);
+    explicit Player(ThumbnailGenerator *thumbnail_generator, QObject *parent = 0);
     void setVideoSink(const QGst::ElementPtr & sink);
 
     /**
@@ -105,6 +105,7 @@ private:
 
 
     MediaInfoGatherer media_info_gatherer;
+    ThumbnailGenerator *thumbnail_generator;
 
     QString duration;
     QString position;
