@@ -4,17 +4,17 @@ TEMPLATE = app
 TARGET = qmlplayer
 
 # produce nice compilation output
-CONFIG += silent
+#CONFIG += silent
 
 # Tell qmake to use pkg-config to find QtGStreamer.
 CONFIG += link_pkgconfig
 
 # Now tell qmake to link to QtGStreamer and also use its include path and Cflags.
 contains(QT_VERSION, ^4\\..*) {
-  PKGCONFIG += QtGStreamer-1.0 QtGStreamerUi-1.0
+  PKGCONFIG += QtGStreamer-1.0 QtGStreamerUi-1.0 QtGStreamerUtils-1.0
 }
 contains(QT_VERSION, ^5\\..*) {
-  PKGCONFIG += Qt5GStreamer-1.0 Qt5GStreamerUi-1.0
+  PKGCONFIG += Qt5GStreamer-1.0 Qt5GStreamerUi-1.0 QtGStreamerUtils-1.0
   QT += widgets
 }
 
@@ -29,6 +29,12 @@ DEFINES += QT_NO_KEYWORDS
 QT += declarative opengl
 
 # Input
-HEADERS += player.h
-SOURCES += main.cpp player.cpp
+HEADERS += player.h \
+    mediainfogatherer.h \
+    thumbnailgenerator.h \
+    thumbnailimageprovider.h
+SOURCES += main.cpp player.cpp \
+    mediainfogatherer.cpp \
+    thumbnailgenerator.cpp \
+    thumbnailimageprovider.cpp
 RESOURCES += qmlplayer.qrc

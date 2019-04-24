@@ -20,26 +20,98 @@
 #define PLAYER_H
 
 #include <QObject>
+#include <QTimer>
+
 #include <QGst/Pipeline>
 #include <QGst/Message>
+
+#include "mediainfogatherer.h"
+#include "thumbnailgenerator.h"
+
 
 class Player : public QObject
 {
     Q_OBJECT
-public:
-    explicit Player(QObject *parent = 0);
 
+    Q_PROPERTY(QString duration READ getDuration NOTIFY durationUpdated)
+    Q_PROPERTY(QString position READ getPosition NOTIFY positionUpdated)
+    Q_PROPERTY(double slider_position READ getSliderPosition NOTIFY positionUpdated)
+
+public:
+    explicit Player(ThumbnailGenerator *thumbnail_generator, QObject *parent = 0);
     void setVideoSink(const QGst::ElementPtr & sink);
+
+    /**
+     * @brief getDuration - Called from the qml to get the
+     * duration; triggered by the durationUpdated signal.
+     * @return
+     */
+    QString getDuration();
+
+    /**
+     * @brief getPosition - Called from qml to get the position
+     * triggered by the positionUpdated signal.
+     * @return
+     */
+    QString getPosition();
+
+    /**
+     * @brief getSliderPosition This is calculated by
+     * elapsed_time * duration
+     * @return values between 0 - 1 representing slider position
+     */
+    double getSliderPosition();
+
+
+    void seekToPosition(QTime);
 
 public Q_SLOTS:
     void play();
     void stop();
     void open();
 
+    void sliderPositionChanged(const double &position);
+
+private Q_SLOTS:
+    /**
+     * @brief updatePosition - Called every 20ms
+     * by position_timer when the stream is playing.
+     */
+    void updatePosition();
+
+Q_SIGNALS:
+    void durationUpdated();
+    void positionUpdated();
+
 private:
     void openFile(const QString & fileName);
     void setUri(const QString & uri);
     void onBusMessage(const QGst::MessagePtr & message);
+
+    /**
+     * @brief setDuration - Gets the duration of the
+     * stream and saves it in HH:mm:ss.SSS format to
+     * duration. Emits change to QML
+     * @param duration_qtime
+     */
+    void setDuration(QTime *duration_qtime);
+
+    /**
+     * @brief setPosition Sets the local variable; then
+     * starts chain of events to then update the UI.
+     * @param position_qtime
+     */
+    void setPosition(QTime position_qtime);
+
+
+    MediaInfoGatherer media_info_gatherer;
+    ThumbnailGenerator *thumbnail_generator;
+
+    QString duration;
+    QString position;
+    double slider_position;
+
+    QTimer position_timer;
 
     QGst::PipelinePtr m_pipeline;
     QGst::ElementPtr m_videoSink;

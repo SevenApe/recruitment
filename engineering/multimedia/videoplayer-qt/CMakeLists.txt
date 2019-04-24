@@ -55,7 +55,7 @@ else()
     add_definitions(-DQMLPLAYER_NO_OPENGL)
 endif()
 
-set(videoplayer_SOURCES main.cpp player.cpp)
+set(videoplayer_SOURCES main.cpp player.cpp mediainfogatherer.cpp thumbnailgenerator.cpp thumbnailimageprovider.cpp)
 qt4or5_add_resources(videoplayer_rcc_SOURCES qmlplayer.qrc)
 
 add_executable(videoplayer
